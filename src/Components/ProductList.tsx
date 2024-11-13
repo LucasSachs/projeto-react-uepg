@@ -5,6 +5,7 @@ import { formatCurrencyBRL } from "../helpers/currencyHelper";
 import { toastError } from "../helpers/toastHelper";
 import { productsInterface } from "../interface/products";
 import { ModalAddProduct } from "./ModalAddProduct";
+import { ModalEditProduct } from "./ModalEditProduct";
 import { ModalExcludeProduct } from "./ModalExcludeProduct";
 import { ModalViewProduct } from "./ModalViewProduct";
 
@@ -52,6 +53,7 @@ export function ProductList() {
                             
                             <div className="flex gap-3 items-center">
                                 <ModalViewProduct product={product} />
+                                <ModalEditProduct product={product} setProducts={setProducts} />
                                 <ModalExcludeProduct
                                     product={product}
                                     setProducts={setProducts}

@@ -1,8 +1,8 @@
 import { Eye } from "lucide-react";
 import { formatCurrencyBRL } from "../helpers/currencyHelper";
+import { productsInterface } from "../interface/products";
 import { Input } from "./Input";
 import { Modal } from "./Modal";
-import { productsInterface } from "./ProductList";
 import { TextArea } from "./TextArea";
 
 interface ModalViewProductProps {

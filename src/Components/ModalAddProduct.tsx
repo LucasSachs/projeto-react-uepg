@@ -1,15 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { Dispatch, SetStateAction, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { UseFormReset } from "react-hook-form";
 import { createProduct } from "../data/products";
 import { toastSuccess } from "../helpers/toastHelper";
 import { createNewProduct, productsInterface } from "../interface/products";
-import { createNewProductSchema, CreateNewProductSchemaType } from "../Schemas/createNewProductSchema";
-import { CurrencyInput } from "./CurrencyInput";
-import { Input } from "./Input";
+import { CreateNewProductSchemaType } from "../Schemas/createNewProductSchema";
 import { Modal } from "./Modal";
-import { TextArea } from "./TextArea";
+import { ProductForm } from "./ProductForm";
 
 interface ModalAddProductProps {
     setProducts: Dispatch<SetStateAction<productsInterface[]>>;
@@ -17,19 +14,12 @@ interface ModalAddProductProps {
 
 export function ModalAddProduct({ setProducts }: ModalAddProductProps) {
     const modalRef = useRef<HTMLDialogElement>(null);
-    const { handleSubmit, register, reset, control, formState: { errors, isSubmitting } } = useForm<CreateNewProductSchemaType>({
-        resolver: zodResolver(createNewProductSchema),
-        defaultValues: {
-            name: '',
-            value: '',
-            description: ''
-        }
-    });
+    const [loading, setLoading] = useState<boolean>(false);
 
-    async function handleFormSubmit(data: CreateNewProductSchemaType) {
+    async function handleFormSubmit(data: CreateNewProductSchemaType, reset: UseFormReset<CreateNewProductSchemaType>) {
         const newProduct = await createProduct(data as createNewProduct);
         if(newProduct) {
-            setProducts((prevProducts) => [ ...prevProducts, newProduct ]);
+            setProducts((prevProducts) => [...prevProducts, newProduct]);
 
             modalRef.current?.close();
             toastSuccess('Produto adicionado com sucesso!');
@@ -44,48 +34,12 @@ export function ModalAddProduct({ setProducts }: ModalAddProductProps) {
             trigger={<button className="btn btn-primary"><Plus />Adicionar novo produto</button>}
             width={672}
             ref={modalRef}
-            loading={isSubmitting}
+            loading={loading}
         >
-            <form onSubmit={handleSubmit(handleFormSubmit)}>
-                <div className="flex flex-col gap-2">
-                    <div className="flex gap-4">
-                        <div className="w-1/2">
-                            <Input
-                                label="Produto"
-                                placeholder="Nome do produto"
-                                register={register}
-                                name="name"
-                                error={errors.name?.message}
-                            />
-                        </div>
-
-                        <div className="w-1/2 text-success font-semibold">
-                            <CurrencyInput 
-                                label="Valor"
-                                control={control}
-                                name="value"
-                                error={errors.value?.message}
-                            />
-                        </div>
-                    </div>
-
-                    <TextArea
-                        label="Descrição"
-                        placeholder="Descrição do produto"
-                        register={register}
-                        name="description"
-                        error={errors.description?.message}
-                    />
-
-                    <div className="flex justify-end gap-4 pt-4">
-                        <form method="dialog">
-                            <button className="btn">Cancelar</button>
-                        </form>
-
-                        <button type="submit" className="btn btn-primary">Adicionar</button>
-                    </div>
-                </div>
-            </form>
+            <ProductForm
+                handleFormSubmit={handleFormSubmit}
+                setLoading={setLoading}
+            />
         </Modal>
     );
 }
